@@ -1,4 +1,4 @@
-/**
+    /**
  * Sample React Native App
  * https://github.com/facebook/react-native
  *
@@ -11,15 +11,37 @@ import {
   StyleSheet, 
   View,
   Image,
+  TouchableOpacity,
 
 } from 'react-native';
+import Torch from 'react-native-torch';
+import RNShake from 'react-native-shake';
 
 const App = () =>{
-    const toggle = false;
+    const [toggle, setToggle] = useState(false);
+    const handleChangeToggle = () => setToggle(oldToggle => !oldToggle);
+
+    useEffect(()=> {
+        Torch.switchState(toggle);
+        console.log('Trocou o estado do flash');
+    }, [toggle]);
+
+
+    useEffect(()=> {
+        const subscription = RNShake.addListener(() => {
+            setToggle(oldToggle => !oldToggle);
+        });
+
+        return ()=> subscription.remove();
+
+    }, []);
 
     return(
        <View style={toggle ? styles.containerLight: styles.container} >   
     
+            <TouchableOpacity
+                onPress = {handleChangeToggle}>
+
             <Image style={toggle ? styles.lightingOn: styles.lightingOff}
             source={
              toggle ? require('./assets/icons/eco-light.png')
@@ -34,6 +56,8 @@ const App = () =>{
             }
 
             />
+
+            </TouchableOpacity>
         
         </View>
         
